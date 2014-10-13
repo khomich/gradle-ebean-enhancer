@@ -1,0 +1,13 @@
+apply plugin: 'groovy'
+
+version = '4.1.5-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.avaje.ebeanorm:avaje-ebeanorm-agent:4.1.5'
+    compile gradleApi()
+    compile localGroovy()
+}
