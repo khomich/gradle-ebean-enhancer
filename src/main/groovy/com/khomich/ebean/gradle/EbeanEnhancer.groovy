@@ -34,6 +34,9 @@ class EBeanEnhancer {
 
         def className = ClassUtils.makeClassName(classPath, classFile);
 
+        //quick fix for scala's lambda
+        if (className.contains('$$anonfun$')) return
+
         try {
             classFile.withInputStream { classInputStream ->
                 def enhancedClassData = streamTransform.transform(className, classInputStream)
