@@ -1,22 +1,29 @@
 package com.khomich.ebean.gradle
 
 import com.avaje.ebean.enhance.agent.ClassBytesReader
-import org.apache.commons.io.IOUtils
 
 import java.nio.file.Path
 
 /**
  * Implements additional reader for class bytes when ebean agent refers to super class
  */
-class FileSystemClassBytesReader implements ClassBytesReader {
+class GradleClassBytesReader implements ClassBytesReader {
     private final Path basePath;
 
-    FileSystemClassBytesReader(Path basePath) {
+    GradleClassBytesReader(Path basePath) {
         this.basePath = basePath;
     }
 
     @Override
     byte[] getClassBytes(String className, ClassLoader classLoader) {
+        if (classLoader instanceof ByteClassLoader) {
+            def byteClassLoader = classLoader as ByteClassLoader
+            def bytes = byteClassLoader.getClassBytes(className.replace("/", ".").replace('$', '.'))
+            if (null != bytes) {
+                return bytes
+            }
+        }
+
         def classFilePath = basePath.resolve(className.replace(".", "/") + ".class");
         def file = classFilePath.toFile()
         def buffer = new byte[file.length()]

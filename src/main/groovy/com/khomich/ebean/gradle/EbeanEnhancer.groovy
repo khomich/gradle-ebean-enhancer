@@ -5,19 +5,16 @@ import com.avaje.ebean.enhance.agent.Transformer
 
 import java.lang.instrument.IllegalClassFormatException
 import java.nio.file.Path
-import java.nio.file.Paths
 
 class EBeanEnhancer {
     private final Path classPath
     private final FileFilter fileFilter
+    private final int debugLevel
 
-    EBeanEnhancer(Path classPath) {
-        this(classPath, { file -> true })
-    }
-
-    EBeanEnhancer(Path classPath, FileFilter fileFilter) {
+    EBeanEnhancer(Path classPath, FileFilter fileFilter, int debugLevel) {
         this.classPath = classPath
         this.fileFilter = fileFilter
+        this.debugLevel = debugLevel
     }
 
     void enhance() {
@@ -29,13 +26,15 @@ class EBeanEnhancer {
     }
 
     private void enhanceClassFile(File classFile) {
-        def transformer = new Transformer(new FileSystemClassBytesReader(classPath), "debug=" + 1);//0-9 -> none - all
-        def streamTransform = new InputStreamTransform(transformer, getClass().getClassLoader())
+        def transformer = new Transformer(new GradleClassBytesReader(classPath), "debug=" + debugLevel);//0-9 -> none - all
+        def streamTransform = new InputStreamTransform(transformer, new ByteClassLoader(getClass().getClassLoader()))
 
         def className = ClassUtils.makeClassName(classPath, classFile);
 
-        //quick fix for scala's lambda
-        if (className.contains('$$anonfun$')) return
+        if (
+            className.contains('$$anonfun$') ||     //scala lambda: anonymous function
+            className.contains('$_')                //groovy meta info classes & closures
+        ) return
 
         try {
             classFile.withInputStream { classInputStream ->

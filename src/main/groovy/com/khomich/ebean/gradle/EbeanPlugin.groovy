@@ -39,7 +39,7 @@ class EbeanPlugin implements Plugin<Project> {
             if (outputDir.isDirectory()) {
                 def classPath = outputDir.toPath()
                 def fileFilter = new EbeanFileFilter(classPath, params.include, params.exclude)
-                new EBeanEnhancer(classPath, fileFilter).enhance()
+                new EBeanEnhancer(classPath, fileFilter, params.debugLevel).enhance()
             }
         }
     }
@@ -55,5 +55,10 @@ class EbeanPluginParams {
      * Accepts class and packages name only.
      */
     String[] exclude = []
+
+    /**
+     * Ebean enhancer debug level
+     */
+    int debugLevel = 1
 }
 

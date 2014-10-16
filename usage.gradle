@@ -1,0 +1,12 @@
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.khomich:gradle-ebean-enhancer:1.0.5(4.1.5)-SNAPSHOT'
+    }
+}
+
+ebean {
+    debugLevel = 1 //1 - 9
+}

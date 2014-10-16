@@ -1,12 +1,26 @@
 apply plugin: 'groovy'
+apply plugin: 'maven-publish'
 
-version = '4.1.5-SNAPSHOT'
+version = '1.0.5(4.1.5)-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.khomich'
+            artifactId 'gradle-ebean-enhancer'
+            version "$version"
+
+            from components.java
+        }
+    }
+}
+
 dependencies {
+    compile 'org.scala-lang:scala-library:2.11.1'
     compile 'org.avaje.ebeanorm:avaje-ebeanorm-agent:4.1.5'
     compile gradleApi()
     compile localGroovy()
